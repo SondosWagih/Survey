@@ -39,73 +39,22 @@ let selectedWordSet = [];
 let startTime;
 let isEmailJSReady = false;
 
-function calculateResults() {
-    // Collect responses
-    userResponses = [];
-    for (let i = 0; i < 15; i++) {
-        const input = document.getElementById(`recall${i}`);
-        const value = input ? input.value.trim().toUpperCase() : '';
-        userResponses.push(value);
-    }
-    
-    const primacy = [0, 1, 2, 3, 4];
-    const middle = [5, 6, 7, 8, 9];
-    const recency = [10, 11, 12, 13, 14];
-    
     let primacyCorrect = 0, middleCorrect = 0, recencyCorrect = 0;
     let primacyResults = [], middleResults = [], recencyResults = [];
     
-    // Check primacy (beginning)
-    primacy.forEach(pos => {
-        const correct = userResponses.some(response => isSimilar(response, selectedWordSet[pos]));
-        if (correct) primacyCorrect++;
-        primacyResults.push({
-            word: selectedWordSet[pos],
-            correct: correct
-        });
-    });
-    
-    // Check middle
-    middle.forEach(pos => {
-        const correct = userResponses.some(response => isSimilar(response, selectedWordSet[pos]));
-        if (correct) middleCorrect++;
-        middleResults.push({
-            word: selectedWordSet[pos],
-            correct: correct
-        });
-    });
-    
-    // Check recency (end)
-    recency.forEach(pos => {
-        const correct = userResponses.some(response => isSimilar(response, selectedWordSet[pos]));
-        if (correct) recencyCorrect++;
-        recencyResults.push({
-            word: selectedWordSet[pos],
-            correct: correct
-        });
-    });
-    
-    return {
-        primacyCorrect,
-        middleCorrect,
-        recencyCorrect,
-        primacyResults,
-        middleResults,
-        recencyResults,
-        totalCorrect: primacyCorrect + middleCorrect + recencyCorrect
-    };
-}
-
 function normalizeWord(word) {
-    // إزالة المسافات والعلامات
-    return word.replace(/[^A-Z]/g, '');
+    if (!word) return '';
+    return word
+        .trim()
+        .toLowerCase()
+        .replace(/[ًٌٍَُِّْءئؤ]/g, "")
+        .replace(/ة/g, "ه")
+        .replace(/\s+/g, ' ')
+        .replace(/[إأآا]/g, "ا"); // توحيد أشكال الألف
 }
 
-// ثم تعديل دالة isSimilar لاستخدامها:
 function isSimilar(word1, word2) {
-    word1 = normalizeWord(word1);
-    word2 = normalizeWord(word2);
-    return word1 === word2;
+    return normalizeWord(word1) === normalizeWord(word2);
 }
 
 function getRandomWords(count) {
@@ -120,6 +69,60 @@ function getRandomWords(count) {
         [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
     }
     return shuffled.slice(0, count);
+}
+
+function isFuzzySimilar(word1, word2) {
+    word1 = normalizeWord(word1);
+    word2 = normalizeWord(word2);
+    
+    if (word1 === word2) return true; // إذا كانت المطابقة تامة
+    
+    const removeRepeats = (str) => str.replace(/(.)\1+/g, '$1');
+    if (removeRepeats(word1) === removeRepeats(word2)) return true;
+    
+    const keyboardTypos = {
+        'ئ': 'ء', 'ؤ': 'ء', 'ر': 'ؤ', 'ة': 'ه',
+        'أ': 'ا', 'إ': 'ا', 'آ': 'ا', ' ': ''
+    };
+    let normalized1 = word1.split('').map(c => keyboardTypos[c] || c).join('');
+    let normalized2 = word2.split('').map(c => keyboardTypos[c] || c).join('');
+    if (normalized1 === normalized2) return true;
+    
+    if (word1.length === word2.length) {
+        let diff = 0;
+        for (let i = 0; i < word1.length; i++) {
+            if (word1[i] !== word2[i]) diff++;
+        }
+        if (diff === 1 && word1.split('').sort().join('') === word2.split('').sort().join('')) {
+            return true;
+        }
+    }
+    
+    const maxAllowedDistance = 1;
+    if (getEditDistance(word1, word2) <= maxAllowedDistance) return true;
+    
+    return false;
+}
+
+function getEditDistance(a, b) {
+    if (a.length === 0) return b.length;
+    if (b.length === 0) return a.length;
+    
+    const matrix = [];
+    for (let i = 0; i <= b.length; i++) matrix[i] = [i];
+    for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
+    
+    for (let i = 1; i <= b.length; i++) {
+        for (let j = 1; j <= a.length; j++) {
+            const cost = a[j - 1] === b[i - 1] ? 0 : 1;
+            matrix[i][j] = Math.min(
+                matrix[i - 1][j] + 1,
+                matrix[i][j - 1] + 1,
+                matrix[i - 1][j - 1] + cost
+            );
+        }
+    }
+    return matrix[b.length][a.length];
 }
 
 // Initialize EmailJS
@@ -367,58 +370,41 @@ function startRecall() {
 
 // Calculate results
 function calculateResults() {
-    // Collect responses
     userResponses = [];
     for (let i = 0; i < 15; i++) {
         const input = document.getElementById(`recall${i}`);
-        const value = input ? input.value.trim().toUpperCase() : '';
+        const value = input ? input.value.trim() : '';
         userResponses.push(value);
     }
     
-    const primacy = [0, 1, 2, 3, 4]; // First 5 positions
-    const middle = [5, 6, 7, 8, 9]; // Middle 5 positions
-    const recency = [10, 11, 12, 13, 14]; // Last 5 positions
+    const primacy = [0, 1, 2, 3, 4];
+    const middle = [5, 6, 7, 8, 9];
+    const recency = [10, 11, 12, 13, 14];
     
     let primacyCorrect = 0, middleCorrect = 0, recencyCorrect = 0;
-    let primacyResults = [], middleResults = [], recencyResults = [];
     
-    // Check primacy (beginning)
     primacy.forEach(pos => {
-        const correct = userResponses.includes(selectedWordSet[pos]);
-        if (correct) primacyCorrect++;
-        primacyResults.push({
-            word: selectedWordSet[pos],
-            correct: correct
-        });
+        if (userResponses.some(response => isSimilar(response, selectedWordSet[pos]))) {
+            primacyCorrect++;
+        }
     });
     
-    // Check middle
     middle.forEach(pos => {
-        const correct = userResponses.includes(selectedWordSet[pos]);
-        if (correct) middleCorrect++;
-        middleResults.push({
-            word: selectedWordSet[pos],
-            correct: correct
-        });
+        if (userResponses.some(response => isSimilar(response, selectedWordSet[pos]))) {
+            middleCorrect++;
+        }
     });
     
-    // Check recency (end)
     recency.forEach(pos => {
-        const correct = userResponses.includes(selectedWordSet[pos]);
-        if (correct) recencyCorrect++;
-        recencyResults.push({
-            word: selectedWordSet[pos],
-            correct: correct
-        });
+        if (userResponses.some(response => isSimilar(response, selectedWordSet[pos]))) {
+            recencyCorrect++;
+        }
     });
     
     return {
         primacyCorrect,
         middleCorrect,
         recencyCorrect,
-        primacyResults,
-        middleResults,
-        recencyResults,
         totalCorrect: primacyCorrect + middleCorrect + recencyCorrect
     };
 }
