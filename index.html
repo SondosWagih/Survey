@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار الذاكرة وتأثير الموقع التسلسلي</title>
+    <link rel="stylesheet" href="style.css"></head>
+<body>
+    <div class="container">
+    <!-- Consent Phase -->
+    <div class="phase active" id="consentPhase">
+        <h2><span class="phase-number">1</span>📝الموافقة على الشروط</h2>
+        <div style="background: rgba(255, 255, 255, 0.2); padding: 20px; border-radius: 15px; margin: 20px 0; max-height: 60vh; overflow-y: auto;">
+            <h3 style="margin-bottom: 15px;">بحث حول تأثير الموقع التسلسلي على الذاكرة</h3>
+            
+            <p style="margin-bottom: 15px;"><strong>هدف الدراسة: </strong>استكشاف كيف يؤثر موضع الكلمات داخل قائمة على تذكرها.</p>
+            
+            <p style="margin-bottom: 15px;"><strong>الإجراءات: </strong>سيُطلب منك:</p>
+            <ul style="margin-bottom: 15px; padding-left: 20px;">
+                <li>تعبئة معلومات ديموغرافية أساسية</li>
+                <li>حفظ قائمة من الكلمات</li>
+                <li>حل مهمة رياضية قصيرة</li>
+                <li>تذكر الكلمات التي تتذكرها</li>
+            </ul>
+            
+            <p style="margin-bottom: 15px;"><strong>المخاطر والفوائد:</strong></p>
+            <ul style="margin-bottom: 15px; padding-left: 20px;">
+                <li>لا توجد مخاطر متوقعة من المشاركة في هذه الدراسة</li>
+                <li>الفائدة الرئيسية هي فهم أفضل لكيفية عمل ذاكرتك</li>
+            </ul>
+            
+            <p style="margin-bottom: 15px;"><strong>السرية:</strong></p>
+            <ul style="margin-bottom: 15px; padding-left: 20px;">
+                <li>جميع البيانات ستبقى مجهولة الهوية</li>
+                <li>ستُستخدم البيانات لأغراض البحث العلمي فقط</li>
+            </ul>
+            
+            <p style="margin-bottom: 15px;"><strong>المشاركة الطوعية:</strong></p>
+            <ul style="margin-bottom: 15px; padding-left: 20px;">
+            <li>المشاركة في هذه الدراسة اختيارية تمامًا</li>
+            </ul>
+            
+            <div style="margin-top: 25px; padding: 15px; background: rgba(255,255,255,0.1); border-radius: 10px;">
+                <label style="display: flex; align-items: center; cursor: pointer;">
+                    <input type="checkbox" id="consentCheckbox" style="margin-right: 10px;">
+                    <span>أقر بأنني قرأت وفهمت المعلومات أعلاه، وأوافق طوعًا على المشاركة في هذه الدراسة.</span>
+                </label>
+            </div>
+        </div>
+        
+        <button onclick="checkConsent()" id="consentButton" disabled>أوافق وأرغب في المتابعة</button>
+    </div>
+    <div class="background-elements">
+        <div class="floating-shape shape1"></div>
+        <div class="floating-shape shape2"></div>
+        <div class="floating-shape shape3"></div>
+    </div>
+    
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+    </div>
+    
+    <div class="container">
+        <h1>🧠 مختبر أبحاث الذاكرة</h1>
+        <p class="subtitle">اكتشف كيف يتذكر دماغك المعلومات من خلال تأثير الموقع التسلسلي</p>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+        
+        <!-- Instructions Phase -->
+        <div class="phase hidden" id="instructionsPhase">
+            <h2><span class="phase-number">1</span>🎯 مرحبًا بك في التجربة</h2>
+            <p style="font-size: 1.1em; line-height: 1.6; margin-bottom: 20px;">
+                أنت على وشك المشاركة في دراسة ممتعة حول الذاكرة البشرية! نحن نحقق في
+                <strong>تأثير الموقع التسلسلي</strong> - وهو ظاهرة نفسية تشير إلى أن الناس غالبًا ما يتذكرون
+                العناصر في بداية ونهاية القوائم بشكل أفضل من تلك التي في المنتصف.
+            </p>
+        
+            <div style="background: rgba(255, 255, 255, 0.2); padding: 20px; border-radius: 15px; margin: 20px 0;">
+                <h3 style="margin-bottom: 15px;">📋 ما الذي ستقوم به:</h3>
+                <ul style="font-size: 1em; line-height: 1.8;">
+                    <li>📝 تقديم بعض المعلومات الديموغرافية الأساسية</li>
+                    <li>🧠 دراسة قائمة من 15 كلمة لمدة 30 ثانية</li>
+                    <li>🔢 إتمام مهمة تشتيت انتباه قصيرة</li>
+                    <li>✍️ محاولة تذكر أكبر عدد ممكن من الكلمات</li>
+                    <li>📊 الاطلاع على نتائجك وتحليلك الشخصي</li>
+                </ul>
+            </div>
+            
+            <button onclick="startSurvey()">🚀 ابدأ التجربة</button>
+        </div>
+        
+        <!-- مرحلة المعلومات الديموغرافية -->
+        <div class="phase hidden" id="demographicsPhase">
+            <h2><span class="phase-number">2</span>👤 عنك</h2>
+            <p style="margin-bottom: 20px;">ساعدنا في فهم كيف يمكن أن تؤثر العوامل المختلفة على أداء الذاكرة:</p>
+            
+            <div class="input-section">
+                <div class="form-group">
+                    <label for="age">العمر:</label>
+                    <input type="number" id="age" placeholder="مثال: 25" min="10" max="100" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="education">المستوى التعليمي:</label>
+                    <select id="education" required>
+                        <option value="">اختر أعلى مستوى تعليمي وصلت إليه...</option>
+                        <option value="middle-school">المرحلة الإعدادية</option>
+                        <option value="high-school">المرحلة الثانوية</option>
+                        <option value="some-college">بعض الدراسة الجامعية</option>
+                        <option value="bachelors">درجة البكالوريوس</option>
+                        <option value="masters">درجة الماجستير</option>
+                        <option value="doctorate">الدكتوراه / PhD</option>
+                    </select>
+                </div>
+            </div>
+            
+            <button onclick="showWordList()" id="continueToTestBtn">المتابعة لاختبار الذاكرة 🧠</button>
+        </div>
+        
+        <!-- مرحلة حفظ الكلمات -->
+        <div class="phase hidden" id="learningPhase">
+            <h2><span class="phase-number">3</span>📚 مرحلة الحفظ</h2>
+            <p style="margin-bottom: 20px;">
+                احفظ الكلمات التالية. لديك <strong>30 ثانية</strong> – استخدم أي طريقة تساعدك على التذكر!
+            </p>
+            
+            <div class="timer" id="timer">30</div>
+            
+            <div class="word-list" id="wordList"></div>
+        </div>
+        
+        <!-- مرحلة التشتيت -->
+        <div class="phase hidden" id="distractionPhase">
+            <h2><span class="phase-number">4</span>🔢 مهمة تشتيت الانتباه</h2>
+            <p style="margin-bottom: 20px;">
+                قبل أن نختبر ذاكرتك، قم بحل هذه المسائل الحسابية لتفريغ الذاكرة العاملة:
+            </p>
+            
+            <div id="mathProblems"></div>
+            
+            <button onclick="startRecall()" id="continueBtn" style="display: none;">
+                جاهز لاختبار الذاكرة 📝
+            </button>
+        </div>
+
+    <!-- مرحلة التذكر -->
+    <div class="phase hidden" id="recallPhase">
+        <h2><span class="phase-number">5</span>🎯 مرحلة التذكر</h2>
+        <p style="margin-bottom: 20px;">
+            اكتب أكبر عدد ممكن من الكلمات التي تتذكرها من القائمة الأصلية.
+        </p>
+        <p class="neon-warning">⚠️ <span class="glow-text">الترتيب لا يهم</span></p>
+        <div class="input-section">
+            <div class="recall-grid" id="recallInputs"></div>
+            
+            <div style="background: #ffffff; padding: 15px; border-radius: 12px; margin-top: 15px;">
+                <p><strong>📝 التعليمات:</strong></p>
+                <ul>
+                    <li>اكتب كلمة واحدة في كل مربع</li>
+                    <li>الإملاء يجب أن يكون دقيقًا</li>
+                    <li>لا تقلق بشأن ترتيب الكلمات</li>
+                    <li>اترك المربعات فارغة إذا لم تتذكر كلمات إضافية</li>
+                </ul>
+            </div>
+        </div>
+        
+        <button onclick="showResults()">إرسال إجاباتي 📊</button>
+    </div>
+
+    <!-- مرحلة عرض النتائج -->
+    <div class="phase hidden" id="resultsPhase">
+        <h2><span class="phase-number">6</span>🎉 شكرًا لمشاركتك!</h2>
+        
+        <div class="results" id="results">
+            <div style="text-align: center; margin-bottom: 30px;">
+                <p style="font-size: 1.2em; margin-bottom: 20px;">
+                    شكرًا لمشاركتك في هذه الدراسة العلمية. مساهمتك تساعدنا في فهم أفضل لذاكرة الإنسان.
+                </p>
+                
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 15px; margin-bottom: 25px;">
+                    <h3 style="color: #2c5282;">حول هذا البحث</h3>
+                    <p>
+                        هذا الاختبار يستكشف "تأثير الموقع التسلسلي" في الذاكرة، وهو ظاهرة يتذكر فيها الناس العناصر في بداية ونهاية القائمة بشكل أفضل من العناصر في المنتصف.
+                    </p>
+                </div>
+                
+                <p style="margin-bottom: 25px;">
+                    سيتم إرسال نتائجك إلى الباحث ولن تُستخدم إلا لأغراض البحث العلمي.
+                </p>
+            </div>
+        </div>
+        
+        <div style="display: flex; gap: 15px; justify-content: center; margin-top: 25px;">
+            <button onclick="shareResults()" style="background: linear-gradient(45deg, #28a745, #20c997);">
+                📤 إرسال النتائج إلى الباحث
+            </button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+
+ </body>
+</html>
